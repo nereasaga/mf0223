@@ -42,7 +42,13 @@ function crearTarjeta(servidor) {
         <p><strong>RAM:</strong> ${servidor.ram} GB</p>
         <p><strong>Almacenamiento:</strong> ${servidor.almacenamiento}</p>
         <p><strong>Presupuesto:</strong> ${servidor.presupuesto}€</p>
+        <button class="btn-eliminar" data-id="${servidor.id}">Eliminar</button>
     `;
+
+    const btnEliminar = div.querySelector('.btn-eliminar');
+    btnEliminar.addEventListener('click', function() {
+        eliminarServidor(servidor.id);
+    });
 
     return div;
 }
@@ -78,5 +84,20 @@ function registrarServidor() {
     })
     .catch(error => {
         console.error('Error al registrar servidor: ', error);
+    });
+}
+
+// Delete
+function eliminarServidor(id) {
+    fetch(`${URL}/${id}`, {
+        method: 'DELETE'
+    })
+    .then(response => {
+        if (response.ok) {
+            cargarServidores();
+        }
+    })
+    .catch(error => {
+        console.error('Error al eliminar: ', error);
     });
 }
