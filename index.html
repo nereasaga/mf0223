@@ -13,30 +13,46 @@
             <h2>Registrar Servidor</h2>
             <form id="formulario-servidor">
                 <div class="form-group">
-                    <label for="nombre">Nombre del Servidor:</label>
+                    <label for="nombre">Nombre del Servidor</label>
                     <input type="text" id="nombre" name="nombre" placeholder="Nombre" required>
                 </div>
+                
                 <div class="form-group">
-                    <label for="cpu">CPU (núcleos):</label>
-                    <input type="number" id="cpu" name="cpu" placeholder="Mínimo 2" min="2" required>
+                    <label for="cpu">CPU (núcleos)</label>
+                    <input type="number" id="cpu" name="cpu" min="2" placeholder="Min 2" required>
                 </div>
                 <div class="form-group">
-                    <label for="ram">RAM (GB):</label>
-                    <input type="number" id="ram" name="ram" placeholder="Mínimo 4 GB" min="4" required>
+                    <label for="precio-cpu">Precio CPU (€)</label>
+                    <input type="number" id="precio-cpu" name="precio-cpu" min="0" placeholder="Precio CPU (€)" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="ram">RAM (GB)</label>
+                    <input type="number" id="ram" name="ram" min="4" placeholder="Min 4GB" required>
                 </div>
                 <div class="form-group">
-                    <label for="almacenamiento">Tipo de Almacenamiento:</label>
+                    <label for="precio-ram">Precio RAM (€)</label>
+                    <input type="number" id="precio-ram" name="precio-ram" min="0" placeholder="Precio RAM (€)" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="almacenamiento">Almacenamiento</label>
                     <select id="almacenamiento" name="almacenamiento" required>
-                        <option value="">Selecciona tipo</option>
+                        <option value="">Selecciona...</option>
                         <option value="SSD">SSD</option>
                         <option value="HDD">HDD</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="presupuesto">Presupuesto (€):</label>
-                    <input type="number" id="presupuesto" name="presupuesto" placeholder="Máximo 700€" max="700" required>
+                    <label for="precio-almacenamiento">Precio Almacenamiento (€)</label>
+                    <input type="number" id="precio-almacenamiento" name="precio-almacenamiento" min="0" placeholder="Precio Almacenamiento (€)" required>
                 </div>
-                <button type="submit">Registrar Servidor</button>
+                
+                <div class="form-group">
+                    <label>Total: <span id="total-presupuesto">0 €</span> <span id="aviso" style="color:red;"></span></label>
+                </div>
+                
+                <button type="submit" id="btn-submit">Registrar</button>
             </form>
         </div>
         <div class="panel-listado">

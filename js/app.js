@@ -1,25 +1,58 @@
 'use strict';
 
 const URL = 'https://694a4f311282f890d2d842e6.mockapi.io/servidores/servidor';
+const LIMITE_PRESUPUESTO = 700;
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', () => {
     cargarServidores();
 
-    document.getElementById('formulario-servidor').addEventListener('submit', function(event) {
-        event.preventDefault();
+    document.getElementById('formulario-servidor').addEventListener('submit', (e) => {
+        e.preventDefault();
         registrarServidor();
     });
+
+    const inputsPrecio = [
+        'precio-cpu',
+        'precio-ram',
+        'precio-almacenamiento'
+    ];
+
+    inputsPrecio.forEach(id => {
+        document.getElementById(id).addEventListener('input', actualizarTotal);
+    });
 });
+
+// Calculo presupuesto
+
+function calcularTotal() {
+    const precioCpu = parseFloat(document.getElementById('precio-cpu').value) || 0;
+    const precioRam = parseFloat(document.getElementById('precio-ram').value) || 0;
+    const precioAlmacenamiento = parseFloat(document.getElementById('precio-almacenamiento').value) || 0;
+
+    return precioCpu + precioRam + precioAlmacenamiento;
+}
+
+function actualizarTotal() {
+    const total = calcularTotal();
+    const totalSpan = document.getElementById('total-presupuesto');
+    const aviso = document.getElementById('aviso');
+
+    totalSpan.textContent = `${total.toFixed(2)} €`;
+
+    if (total > LIMITE_PRESUPUESTO) {
+        aviso.textContent = ' (Supera 700€)';
+    } else {
+        aviso.textContent = '';
+    }
+}
+
+// Get
 
 function cargarServidores() {
     fetch(URL)
         .then(response => response.json())
-        .then(servidores => {
-            mostrarServidores(servidores);
-        })
-        .catch(error => {
-            console.error('Error al cargar servidores: ', error);
-        });
+        .then(data => mostrarServidores(data))
+        .catch(error => console.error('Error al cargar servidores:', error));
 }
 
 function mostrarServidores(servidores) {
@@ -27,8 +60,7 @@ function mostrarServidores(servidores) {
     listado.innerHTML = '';
 
     servidores.forEach(servidor => {
-        const tarjeta = crearTarjeta(servidor);
-        listado.appendChild(tarjeta);
+        listado.appendChild(crearTarjeta(servidor));
     });
 }
 
@@ -41,24 +73,24 @@ function crearTarjeta(servidor) {
         <p><strong>CPU:</strong> ${servidor.cpu} núcleos</p>
         <p><strong>RAM:</strong> ${servidor.ram} GB</p>
         <p><strong>Almacenamiento:</strong> ${servidor.almacenamiento}</p>
-        <p><strong>Presupuesto:</strong> ${servidor.presupuesto}€</p>
-        <button class="btn-eliminar" data-id="${servidor.id}">Eliminar</button>
+        <p><strong>Presupuesto:</strong> ${servidor.presupuesto} €</p>
+        <button class="btn-eliminar">Eliminar</button>
     `;
 
-    const btnEliminar = div.querySelector('.btn-eliminar');
-    btnEliminar.addEventListener('click', function() {
+    div.querySelector('.btn-eliminar').addEventListener('click', () => {
         eliminarServidor(servidor.id);
     });
 
     return div;
 }
 
-// Post
-function registrarServidor() {
-    const presupuesto = parseInt(document.getElementById('presupuesto').value);
+// Post 
 
-    if (presupuesto > 700) {
-        alert('El presupuesto no puede superar los 700€');
+function registrarServidor() {
+    const presupuestoTotal = calcularTotal();
+
+    if (presupuestoTotal > LIMITE_PRESUPUESTO) {
+        alert('El presupuesto total no puede superar los 700€');
         return;
     }
 
@@ -67,37 +99,31 @@ function registrarServidor() {
         cpu: parseInt(document.getElementById('cpu').value),
         ram: parseInt(document.getElementById('ram').value),
         almacenamiento: document.getElementById('almacenamiento').value,
-        presupuesto: presupuesto
+        presupuesto: presupuestoTotal
     };
 
     fetch(URL, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(nuevoServidor)
     })
-    .then(response => response.json())
-    .then(data => {
-        cargarServidores();
-        document.getElementById('formulario-servidor').reset();
-    })
-    .catch(error => {
-        console.error('Error al registrar servidor: ', error);
-    });
+        .then(response => response.json())
+        .then(() => {
+            cargarServidores();
+            document.getElementById('formulario-servidor').reset();
+            actualizarTotal();
+        })
+        .catch(error => console.error('Error al registrar servidor:', error));
 }
 
 // Delete
+
 function eliminarServidor(id) {
-    fetch(`${URL}/${id}`, {
-        method: 'DELETE'
-    })
-    .then(response => {
-        if (response.ok) {
-            cargarServidores();
-        }
-    })
-    .catch(error => {
-        console.error('Error al eliminar: ', error);
-    });
+    fetch(`${URL}/${id}`, { method: 'DELETE' })
+        .then(response => {
+            if (response.ok) {
+                cargarServidores();
+            }
+        })
+        .catch(error => console.error('Error al eliminar servidor:', error));
 }
