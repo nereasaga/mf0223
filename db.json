@@ -1,0 +1,12 @@
+{
+  "servidores": [
+    {
+      "id": "1",
+      "nombre": "Servidor-BD-Principal",
+      "cpu": 8,
+      "ram": 16,
+      "almacenamiento": "SSD",
+      "presupuesto": 650
+    }
+  ]
+}
