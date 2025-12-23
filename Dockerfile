@@ -1,8 +1,14 @@
-FROM nginx:alpine
+# Build
+FROM node:18-alpine AS build
 
-WORKDIR /usr/share/nginx/html
+WORKDIR /app
 
 COPY . .
+
+# Produccion
+FROM nginx:alpine
+
+COPY --from=build /app /usr/share/nginx/html
 
 EXPOSE 80
 
